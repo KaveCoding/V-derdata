@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text.RegularExpressions;
 
 
 /*Utomhus
@@ -16,6 +17,8 @@ Sortering av varmast till kallaste dagen enligt medeltemperatur per dag
 sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag
 Sortering av minst till störst risk av mögel
 */
+
+
 namespace Väderkollen
 {
     internal class Program
@@ -26,7 +29,6 @@ namespace Väderkollen
             ReadAll("tempdata5-medfel.txt");
         }
 
-
         public static void ReadAll(string filename)
         {
             using (StreamReader reader = new StreamReader(path + filename))
@@ -34,25 +36,6 @@ namespace Väderkollen
                 string fileContent = reader.ReadToEnd();
                 Console.WriteLine(fileContent);
             }
-        }
-        static void ReadLines(string filename)
-            {
-                using (StreamReader reader = new StreamReader(path + filename))
-                {
-
-
-                    int lineNumber = 0;
-                    string line = reader.ReadLine();
-                    while (line != null)
-                    {
-                        lineNumber++;
-                        Console.WriteLine("Rad " + lineNumber + " " + line);
-                        line = reader.ReadLine();
-                    }
-
-
-                }
-            }
-            
+        }    
         }
     }
