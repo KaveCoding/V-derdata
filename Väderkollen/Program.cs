@@ -4,7 +4,7 @@ namespace Väderkollen
 {
     internal class Program
     {
-        public static string path = "../../../Files/";
+        public static string path = "../Bin/";
         static void Main(string[] args)
         {
 
