@@ -46,39 +46,28 @@ namespace Väderkollen
             List<Data> Datalist = new List<Data>();
             using (StreamReader reader = new StreamReader(path + filename))
             {
-
-                int lineNumber = 0;
-                string line = reader.ReadLine();
-                Console.WriteLine("Rad " + lineNumber + 1 + " " + line);
-                string temperatur =  RegEx.RegExFunction(@"(?<=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},Ute|Inne,).(\d.\d|.\d)", line);  
-                string datum = RegEx.RegExFunction(@"\d{2}-\d{2}(?<=-\d{2}-\d{2})", line); 
-                string fuktighet = RegEx.RegExFunction(@".(?<=\.\d,\d+).", line);
-                string uteEllerInne = RegEx.RegExFunction(@"(Ute|Inne)", line);
-                Data data = new Data()
+                string[] lines = File.ReadAllLines(path+"tempdata5-medfel.txt");
+                foreach(string line in lines)
                 {
-                    Datum = datum,
-                    Temperatur = Convert.ToDouble(temperatur),
-                    UteEllerInne = uteEllerInne,
-                    Fuktighet = Convert.ToDouble(fuktighet)
-                };
-                Datalist.Add(data);
-                Console.WriteLine(Datalist.Count()); 
-                foreach (var prop in Datalist)
-                {
-                    Console.WriteLine (prop.Temperatur +  " | " + prop.UteEllerInne + " | "  + prop.Fuktighet);
+                    string temperatur = RegEx.RegExFunction(@"(?<=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},Ute,|Inne,).(\d.\d|.\d)", line);
+                    string datum = RegEx.RegExFunction(@"\d{2}-\d{2}(?<=-\d{2}-\d{2})", line);
+                    string fuktighet = RegEx.RegExFunction(@"\d+$", line);
+                    string uteEllerInne = RegEx.RegExFunction(@"(Ute|Inne)", line);
+                    if (temperatur == "No matches") // minns ej
+                        temperatur = null;
+                    if (Convert.ToDouble(temperatur) > 100) //en temp som är 223
+                        temperatur = null;
+                    Data data = new Data()
+                    {
+                        Datum = datum,
+                        Temperatur = Convert.ToDouble(temperatur),
+                        UteEllerInne = uteEllerInne,
+                        Fuktighet = Convert.ToDouble(fuktighet)
+                    };
+                    Datalist.Add(data);
                 }
-
-
-
-                //while (line != null)
-                //{
-                //    lineNumber++;
-                //    Console.WriteLine("Rad " + lineNumber + " " + line);
-                //    line = reader.ReadLine();
-                //}
-
-
+                Console.WriteLine("Datan är nu flyttad!");
             }
         }
     }
-    }
+}
