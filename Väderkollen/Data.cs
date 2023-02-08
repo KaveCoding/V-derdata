@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Väderkollen
 {
-    internal class Data
+    public class Data
     {
         public int Dag { get; set; }
         public int Månad { get; set; }
