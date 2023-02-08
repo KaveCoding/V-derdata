@@ -23,14 +23,13 @@ namespace Väderkollen
 {
     internal class Program
     {
-        static List<Data> Datalist = new List<Data>();
+        
         public static string path = "../../../Files/";
         static void Main(string[] args)
         {
-            
 
-            //ReadAll("tempdata5-medfel.txt");
             ReadLines("tempdata5-medfel.txt");
+           
         }
 
         public static void ReadAll(string filename)
@@ -44,13 +43,30 @@ namespace Väderkollen
 
         public static void ReadLines(string filename)
         {
+            List<Data> Datalist = new List<Data>();
             using (StreamReader reader = new StreamReader(path + filename))
             {
 
                 int lineNumber = 0;
                 string line = reader.ReadLine();
                 Console.WriteLine("Rad " + lineNumber + 1 + " " + line);
-                RegEx.RegExFunction(@"(?<=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},Ute|Inne,).(\d.\d|.\d)", line);
+                string temperatur =  RegEx.RegExFunction(@"(?<=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},Ute|Inne,).(\d.\d|.\d)", line);  
+                string datum = RegEx.RegExFunction(@"\d{2}-\d{2}(?<=-\d{2}-\d{2})", line); 
+                string fuktighet = RegEx.RegExFunction(@".(?<=\.\d,\d+).", line);
+                string uteEllerInne = RegEx.RegExFunction(@"(Ute|Inne)", line);
+                Data data = new Data()
+                {
+                    Datum = datum,
+                    Temperatur = Convert.ToDouble(temperatur),
+                    UteEllerInne = uteEllerInne,
+                    Fuktighet = Convert.ToDouble(fuktighet)
+                };
+                Datalist.Add(data);
+                Console.WriteLine(Datalist.Count()); 
+                foreach (var prop in Datalist)
+                {
+                    Console.WriteLine (prop.Temperatur +  " | " + prop.UteEllerInne + " | "  + prop.Fuktighet);
+                }
 
 
 
