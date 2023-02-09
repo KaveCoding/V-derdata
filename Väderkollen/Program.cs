@@ -1,5 +1,5 @@
-﻿using System.IO;
-using System.Text.RegularExpressions;
+﻿using System.Globalization;
+
 
 
 /*Utomhus
@@ -23,7 +23,7 @@ namespace Väderkollen
 {
     internal class Program
     {
-        
+
         public static string path = "../../../Files/";
         static void Main(string[] args)
         {
@@ -33,20 +33,20 @@ namespace Väderkollen
 
         }
 
-   
+
         public static void SortByDays(List<Data> list)
         {
-            
-            var groupbymonth = list.GroupBy(M => new { M.Månad, M.Dag} ).Select(
-                g=> new
+
+            var groupbymonth = list.GroupBy(M => new { M.Månad, M.Dag }).Select(
+                g => new
                 {
                     Månad = g.Key.Månad,
                     Dag = g.Key.Dag,
-                    Fuktighet = (g.Average(s=>s.Fuktighet))
-                });;
-            
+                    Fuktighet = (g.Average(s => s.Fuktighet))
+                }); ;
 
-            foreach(var group in groupbymonth)
+
+            foreach (var group in groupbymonth)
             {
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
             }
@@ -61,7 +61,7 @@ namespace Väderkollen
                     Månad = g.Key.Månad,
                     Dag = g.Key.Dag,
                     Fuktighet = (g.Average(s => s.Fuktighet)),
-                }); 
+                });
 
             Console.WriteLine("Ute: ");
             foreach (var group in groupbyMonthOutside)
@@ -95,8 +95,8 @@ namespace Väderkollen
             List<Data> InneDataList = new List<Data>();
             using (StreamReader reader = new StreamReader(path + filename))
             {
-                string[] lines = File.ReadAllLines(path+"tempdata5-medfel.txt");
-                foreach(string line in lines)
+                string[] lines = File.ReadAllLines(path + "tempdata5-medfel.txt");
+                foreach (string line in lines)
                 {
                     string temperatur = RegEx.RegExFunction(@"(?<=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},Ute,|Inne,).(\d.\d|.\d)", line);
                     string datum = RegEx.RegExFunction(@"\d{2}-\d{2}(?<=-\d{2}-\d{2})", line);
@@ -112,7 +112,7 @@ namespace Väderkollen
 
                     if (temperatur == "No matches") // minns ej
                         temperatur = null;
-                    if (Convert.ToDouble(temperatur) > 100) //en temp som är 223
+                    if (Convert.ToDouble(temperatur, CultureInfo.InvariantCulture) > 100) //en temp som är 223
                         temperatur = null;
                     if (uteEllerInne == "Ute")
                     {
@@ -121,8 +121,8 @@ namespace Väderkollen
                             Datum = datum,
                             Dag = int.Parse(dag),
                             Månad = int.Parse(månad),
-                            Temperatur = Convert.ToDouble(temperatur),
-                        
+                            Temperatur = Convert.ToDouble(temperatur, CultureInfo.InvariantCulture),
+
                             Fuktighet = Convert.ToDouble(fuktighet)
                         };
                         UteDatalist.Add(data);
@@ -134,9 +134,8 @@ namespace Väderkollen
                             Datum = datum,
                             Dag = int.Parse(dag),
                             Månad = int.Parse(månad),
-                            Temperatur = Convert.ToDouble(temperatur),
-
-                            Fuktighet = Convert.ToDouble(fuktighet)
+                            Temperatur = Convert.ToDouble(temperatur, CultureInfo.InvariantCulture),
+                            Fuktighet = Convert.ToDouble(fuktighet, CultureInfo.InvariantCulture)
                         };
                         InneDataList.Add(data);
                     }
