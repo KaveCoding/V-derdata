@@ -28,20 +28,31 @@ namespace Väderkollen
         static void Main(string[] args)
         {
 
-            ReadLines("tempdata5-medfel.txt");
-           
+            SortByHumidity(CopyDataToList("tempdata5-medfel.txt"));
+
         }
 
-        public static void ReadAll(string filename)
+   
+        public static void SortByHumidity(List<Data> list)
         {
-            using (StreamReader reader = new StreamReader(path + filename))
+            List<Data> sortedByHumidity = new List<Data>();
+            var groupbymonth = list.GroupBy(M => new { M.Månad, M.Dag } ).Select(
+                g=> new
+                {
+                    Månad = g.Key.Månad,
+                    Dag = g.Key.Dag
+                });
+
+            foreach(var group in groupbymonth)
             {
-                string fileContent = reader.ReadToEnd();
-                Console.WriteLine(fileContent);
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad}");
             }
+
+            
+
         }
 
-        public static void ReadLines(string filename)
+        public static List<Data> CopyDataToList(string filename)
         {
             List<Data> Datalist = new List<Data>();
             using (StreamReader reader = new StreamReader(path + filename))
@@ -53,6 +64,14 @@ namespace Väderkollen
                     string datum = RegEx.RegExFunction(@"\d{2}-\d{2}(?<=-\d{2}-\d{2})", line);
                     string fuktighet = RegEx.RegExFunction(@"\d+$", line);
                     string uteEllerInne = RegEx.RegExFunction(@"(Ute|Inne)", line);
+                    var splittad_datum = datum.Split("-");
+                    string månad = (splittad_datum[0]);
+                    string månadutannoll = RegEx.RegExFunction(@"[^0]", månad);
+                    string dag = splittad_datum[1];
+                    string dagUtanNoll = RegEx.RegExFunction(@"[^0]", dag);
+
+
+
                     if (temperatur == "No matches") // minns ej
                         temperatur = null;
                     if (Convert.ToDouble(temperatur) > 100) //en temp som är 223
@@ -60,13 +79,16 @@ namespace Väderkollen
                     Data data = new Data()
                     {
                         Datum = datum,
+                        Dag = int.Parse(dag),
+                        Månad = int.Parse(månad),
                         Temperatur = Convert.ToDouble(temperatur),
                         UteEllerInne = uteEllerInne,
                         Fuktighet = Convert.ToDouble(fuktighet)
                     };
                     Datalist.Add(data);
                 }
-                Console.WriteLine("Datan är nu flyttad!");
+                Console.WriteLine("Datan är nu kopierad!");
+                return Datalist;
             }
         }
     }
