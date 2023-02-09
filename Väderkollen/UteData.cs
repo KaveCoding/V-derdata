@@ -12,7 +12,7 @@ namespace Väderkollen
         public int Månad { get; set; }
         public int Dag { get; set; }
         public double? Temperatur { get; set; }
-        public string UteEllerInne { get; set; }
+        //public string UteEllerInne { get; set; }
         public double Fuktighet { get; set; }
 
     }
