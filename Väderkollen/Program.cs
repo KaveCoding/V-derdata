@@ -28,24 +28,27 @@ namespace Väderkollen
         static void Main(string[] args)
         {
 
-            SortByHumidity(CopyDataToList("tempdata5-medfel.txt"));
+            SortByDays(CopyDataToList("tempdata5-medfel.txt"));
 
         }
 
    
-        public static void SortByHumidity(List<Data> list)
+        public static void SortByDays(List<Data> list)
         {
             List<Data> sortedByHumidity = new List<Data>();
-            var groupbymonth = list.GroupBy(M => new { M.Månad, M.Dag } ).Select(
+            var groupbymonth = list.GroupBy(M => new { M.Månad, M.Dag} ).Select(
                 g=> new
                 {
                     Månad = g.Key.Månad,
-                    Dag = g.Key.Dag
-                });
+                    Dag = g.Key.Dag,
+                    Temperatur = (g.Average(s=>s.Temperatur))
+
+                });;
+            
 
             foreach(var group in groupbymonth)
             {
-                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad}");
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
             }
 
             
