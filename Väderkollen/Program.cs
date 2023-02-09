@@ -21,7 +21,6 @@ namespace Väderkollen
         //Lista med alla menyalternativ som metoder, måste vara utan inparametrar.
         private static List<Action> Menu = new List<Action>()
             {
-               Sort_By_Days,
                Run_Template
             };
 
@@ -34,19 +33,19 @@ namespace Väderkollen
         }
         public static void Run()
         {
-            int choise;
+            int choice;
             bool loop = true;
             while (loop)
             {
-                choise = PrintMenu(Menu, "Menu");
-                if (choise == 0)
+                choice = PrintMenu(Menu, "Menu");
+                if (choice == 0)
                 {
                     loop = false;
                     break;
                 }
                 else
                 {
-                    Menu[choise - 1]();
+                    Menu[choice - 1]();
                 }
             }
         }
@@ -62,38 +61,16 @@ namespace Väderkollen
                 Console.WriteLine($"[{i + 1}] {menuList[i].Method.Name}");
             }
             Console.WriteLine("[0]. Exit");
-            int choise = TryParseReadLine(-1, menuList.Count);
-            return choise;
+            int choice = TryParseReadLine(-1, menuList.Count);
+            return choice;
         }
-        public static void Sort_By_Days()
-        {
-
-            SortByDays(CopyDataToList("tempdata5-medfel.txt"));
-        }
+      
         public static void Run_Template()
         {
             Template(CopyDataToList("tempdata5-medfel.txt"));
-            //SortByDays(CopyDataToList("tempdata5-medfel.txt"));
+            
         }
-        public static void SortByDays(List<List<Data>> list)
-        {
-
-            var groupbymonth = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
-                g => new
-                {
-                    Månad = g.Key.Månad,
-                    Dag = g.Key.Dag,
-                    Fuktighet = (g.Average(s => s.Fuktighet))
-                }); ;
-
-
-            foreach (var group in groupbymonth)
-            {
-                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
-            }
-            ContinueMessage();
-        }
-
+       
         public static void Template(List<List<Data>> list)
         {
 
@@ -192,7 +169,7 @@ namespace Väderkollen
             bool success = false;
             while (!success)
             {
-                Console.WriteLine($"Enter choise between {spanLow} and {spanHigh}");
+                Console.WriteLine($"Enter choice between {spanLow} and {spanHigh}");
                 success = int.TryParse(Console.ReadLine(), out key);
                 if (key < spanLow && key > spanHigh)
                 {
