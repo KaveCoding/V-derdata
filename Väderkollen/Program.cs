@@ -1,7 +1,4 @@
 ﻿using System.Globalization;
-
-
-
 /*Utomhus
       Medeltemperatur och luftfuktighet per dag, valt datum, sökmöjlighet
       Sortering av varmast till kallaste dagen enligt medeltemperatur per dag
@@ -17,27 +14,71 @@ Sortering av varmast till kallaste dagen enligt medeltemperatur per dag
 sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag
 Sortering av minst till störst risk av mögel
 */
-
-
 namespace Väderkollen
 {
     internal class Program
     {
+        //Lista med alla menyalternativ som metoder, måste vara utan inparametrar.
+        private static List<Action> Menu = new List<Action>()
+            {
+               Sort_By_Days,
+               Run_Template
+            };
 
         public static string path = "../../../Files/";
         static void Main(string[] args)
         {
 
-            Template(CopyDataToList("tempdata5-medfel.txt"));
-            //SortByDays(CopyDataToList("tempdata5-medfel.txt"));
+            Run();
 
         }
-
-
-        public static void SortByDays(List<Data> list)
+        public static void Run()
+        {
+            int choise;
+            bool loop = true;
+            while (loop)
+            {
+                choise = PrintMenu(Menu, "Menu");
+                if (choise == 0)
+                {
+                    loop = false;
+                    break;
+                }
+                else
+                {
+                    Menu[choise - 1]();
+                }
+            }
+        }
+        public static int PrintMenu(List<Action> menuList, string header)
+        {
+            Console.Clear();
+            Console.SetCursorPosition(Console.BufferWidth / 2, 3);
+            Console.WriteLine(header);
+            Console.WriteLine();
+            Console.WriteLine("Choose an option:");
+            for (int i = 0; i < menuList.Count; i++)
+            {
+                Console.WriteLine($"[{i + 1}] {menuList[i].Method.Name}");
+            }
+            Console.WriteLine("[0]. Exit");
+            int choise = TryParseReadLine(-1, menuList.Count);
+            return choise;
+        }
+        public static void Sort_By_Days()
         {
 
-            var groupbymonth = list.GroupBy(M => new { M.Månad, M.Dag }).Select(
+            SortByDays(CopyDataToList("tempdata5-medfel.txt"));
+        }
+        public static void Run_Template()
+        {
+            Template(CopyDataToList("tempdata5-medfel.txt"));
+            //SortByDays(CopyDataToList("tempdata5-medfel.txt"));
+        }
+        public static void SortByDays(List<List<Data>> list)
+        {
+
+            var groupbymonth = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
                 g => new
                 {
                     Månad = g.Key.Månad,
@@ -50,6 +91,7 @@ namespace Väderkollen
             {
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
             }
+            ContinueMessage();
         }
 
         public static void Template(List<List<Data>> list)
@@ -69,23 +111,20 @@ namespace Väderkollen
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
             }
 
-
-
-
-
             var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
-               g => new
-               {
-                   Månad = g.Key.Månad,
-                   Dag = g.Key.Dag,
-                   Fuktighet = (g.Average(s => s.Fuktighet)),
-               });
+             g => new
+             {
+                 Månad = g.Key.Månad,
+                 Dag = g.Key.Dag,
+                 Fuktighet = (g.Average(s => s.Fuktighet)),
+             });
 
             Console.WriteLine("Inne: ");
             foreach (var group in groupbyMonthInside)
             {
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
             }
+            ContinueMessage();
         }
 
         public static List<List<Data>> CopyDataToList(string filename)
@@ -146,5 +185,40 @@ namespace Väderkollen
                 return DataList;
             }
         }
+
+        public static int TryParseReadLine(int spanLow, int spanHigh)
+        {
+            int key = 0;
+            bool success = false;
+            while (!success)
+            {
+                Console.WriteLine($"Enter choise between {spanLow} and {spanHigh}");
+                success = int.TryParse(Console.ReadLine(), out key);
+                if (key < spanLow && key > spanHigh)
+                {
+                    success = false;
+                }
+                if (!success)
+                {
+                    Console.WriteLine("Incorrect entry!");
+                    Console.WriteLine("Please try again");
+                    Thread.Sleep(2000);
+                    int cursorLeft;
+                    int cursorTop;
+                    (cursorLeft, cursorTop) = Console.GetCursorPosition();
+                    Console.SetCursorPosition(cursorLeft, cursorTop - 2);
+                    Console.WriteLine();
+                    Console.WriteLine();
+                }
+            }
+            return key;
+        }
+        public static void ContinueMessage()
+        {
+            Console.WriteLine("Press any key to continue");
+            Console.ReadKey();
+        }
+
+
     }
 }
