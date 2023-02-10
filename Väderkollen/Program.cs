@@ -1,17 +1,17 @@
 ﻿using System.Globalization;
 /*Utomhus
-      Medeltemperatur och luftfuktighet per dag, valt datum, sökmöjlighet
-      Sortering av varmast till kallaste dagen enligt medeltemperatur per dag
-      sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag
+      Medeltemperatur och luftfuktighet per dag, valt datum, sökmöjlighet           klar
+      Sortering av varmast till kallaste dagen enligt medeltemperatur per dag       klar
+      sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag  klar
       Sortering av minst till störst risk av mögel
       Datum för meteorologisk Höst
       Datum för meteologisk vinter
       */
 
 /*Inomhus
-Medeltemperatur per dag, valt datum
-Sortering av varmast till kallaste dagen enligt medeltemperatur per dag
-sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag
+Medeltemperatur per dag, valt datum                                                 klar
+Sortering av varmast till kallaste dagen enligt medeltemperatur per dag             klar
+sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag        klar
 Sortering av minst till störst risk av mögel
 */
 namespace Väderkollen
