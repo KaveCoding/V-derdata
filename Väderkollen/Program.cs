@@ -21,7 +21,10 @@ namespace Väderkollen
         //Lista med alla menyalternativ som metoder, måste vara utan inparametrar.
         private static List<Action> Menu = new List<Action>()
             {
-               Run_Template
+               Run_Moisture,
+               Run_Temperatures,
+               Run_MoistureSpecific,
+               Run_Temperature_Specific
             };
 
         public static string path = "../../../Files/";
@@ -65,13 +68,63 @@ namespace Väderkollen
             return choice;
         }
 
-        public static void Run_Template()
+
+        public static void Run_MoistureSpecific()
         {
-            Template(CopyDataToList("tempdata5-medfel.txt"));
+            Get_Moisture_Specific_Day(CopyDataToList("tempdata5-medfel.txt"));
+
+        }
+        public static void Run_Temperature_Specific()
+        {
+            Get_Temperature_Specific_Day(CopyDataToList("tempdata5-medfel.txt"));
+
+        }
+        public static void Run_Moisture()
+        {
+            GetMoisture(CopyDataToList("tempdata5-medfel.txt"));
+
+        }
+        public static void Run_Temperatures()
+        {
+            GetTemperatures(CopyDataToList("tempdata5-medfel.txt"));
 
         }
 
-        public static void Template(List<List<Data>> list)
+
+        public static void GetTemperatures(List<List<Data>> list )
+        {
+
+            var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
+                g => new
+                {
+                    Månad = g.Key.Månad,
+                    Dag = g.Key.Dag,
+                    Temperatur = (g.Average(s => s.Temperatur)),
+                }).OrderByDescending(g=>g.Temperatur);
+            
+            Console.WriteLine("Ute: ");
+            foreach (var group in groupbyMonthOutside)
+            {
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
+            }
+
+            var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
+             g => new
+             {
+                 Månad = g.Key.Månad,
+                 Dag = g.Key.Dag,
+                 Temperatur = (g.Average(s => s.Temperatur)),
+             }).OrderByDescending(g=>g.Temperatur);
+
+            Console.WriteLine("Inne: ");
+            foreach (var group in groupbyMonthInside)
+            {
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
+            }
+            ContinueMessage();
+        }
+
+        public static void GetMoisture(List<List<Data>> list)
         {
 
             var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
@@ -80,11 +133,52 @@ namespace Väderkollen
                     Månad = g.Key.Månad,
                     Dag = g.Key.Dag,
                     Fuktighet = (g.Average(s => s.Fuktighet)),
-                });
+                }).OrderByDescending(g => g.Fuktighet);
 
             Console.WriteLine("Ute: ");
             foreach (var group in groupbyMonthOutside)
             {
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Fuktighet}");
+            }
+
+            var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
+             g => new
+             {
+                 Månad = g.Key.Månad,
+                 Dag = g.Key.Dag,
+                 Fuktighet = (g.Average(s => s.Fuktighet)),
+             }).OrderByDescending(g => g.Fuktighet);
+
+            Console.WriteLine("Inne: ");
+            foreach (var group in groupbyMonthInside)
+            {
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Fuktighet}");
+            }
+            ContinueMessage();
+        }
+
+        public static void Get_Moisture_Specific_Day(List<List<Data>> list)
+        {
+
+            Console.WriteLine("Skriv in dag");
+            var dag = TryParseReadLine(1,31);
+            Console.WriteLine("Skriv in Månad");
+            var månad = TryParseReadLine(1, 12);
+
+            var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
+                g => new
+                {
+                    Månad = g.Key.Månad,
+                    Dag = g.Key.Dag,
+                    Fuktighet = (g.Average(s => s.Fuktighet)),
+                }).OrderByDescending(g => g.Fuktighet);
+
+            Console.WriteLine("Ute: ");
+
+            
+            foreach (var group in groupbyMonthOutside)
+            {
+                if (group.Dag == dag && group.Månad == månad)
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
             }
 
@@ -94,15 +188,59 @@ namespace Väderkollen
                  Månad = g.Key.Månad,
                  Dag = g.Key.Dag,
                  Fuktighet = (g.Average(s => s.Fuktighet)),
-             });
+             }).OrderByDescending(g => g.Fuktighet);
 
             Console.WriteLine("Inne: ");
             foreach (var group in groupbyMonthInside)
             {
-                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
+                if (group.Dag == dag && group.Månad == månad)
+                    Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
             }
             ContinueMessage();
         }
+        public static void Get_Temperature_Specific_Day(List<List<Data>> list)
+        {
+            Console.WriteLine("Skriv in dag");
+            var dag = TryParseReadLine(1, 31);
+            Console.WriteLine("Skriv in Månad");
+            var månad = TryParseReadLine(1, 12);
+
+            var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
+                g => new
+                {
+                    Månad = g.Key.Månad,
+                    Dag = g.Key.Dag,
+                    Temperatur = (g.Average(s => s.Temperatur)),
+                }).OrderByDescending(g => g.Temperatur);
+
+            Console.WriteLine("Ute: ");
+
+
+            foreach (var group in groupbyMonthOutside)
+            {
+                if (group.Dag == dag && group.Månad == månad)
+                    Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
+            }
+
+            var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
+             g => new
+             {
+                 Månad = g.Key.Månad,
+                 Dag = g.Key.Dag,
+                 Temperatur = (g.Average(s => s.Temperatur)),
+             }).OrderByDescending(g => g.Temperatur);
+
+            Console.WriteLine("Inne: ");
+            foreach (var group in groupbyMonthInside)
+            {
+                if (group.Dag == dag && group.Månad == månad)
+                    Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
+            }
+            ContinueMessage();
+        }
+
+
+
 
         public static List<List<Data>> CopyDataToList(string filename)
         {
@@ -120,10 +258,7 @@ namespace Väderkollen
                     string uteEllerInne = RegEx.RegExFunction(@"(Ute|Inne)", line);
                     var splittad_datum = datum.Split("-");
                     string månad = (splittad_datum[0]);
-                    //string månadutannoll = RegEx.RegExFunction(@"[^0]", månad);
                     string dag = splittad_datum[1];
-                    //string dagUtanNoll = RegEx.RegExFunction(@"[^0]", dag);
-
 
 
                     if (temperatur == "No matches") // minns ej
@@ -195,6 +330,7 @@ namespace Väderkollen
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
         }
+
 
 
     }
