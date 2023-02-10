@@ -116,7 +116,9 @@ namespace Väderkollen
                     Vinter.Add(new Årstid() { Dag = group.Dag, Månad = group.Månad });
                 else
                 {
+                    if (Höst.Count !=5 )
                     Höst.Clear();
+                    if (Vinter.Count!= 5)
                     Vinter.Clear();
                 }
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
@@ -263,8 +265,6 @@ namespace Väderkollen
             }
             ContinueMessage();
         }
-
-
 
 
         public static List<List<Data>> CopyDataToList(string filename)
