@@ -103,26 +103,32 @@ namespace Väderkollen
                     Månad = g.Key.Månad,
                     Dag = g.Key.Dag,
                     Temperatur = (g.Average(s => s.Temperatur)),
-                }).OrderByDescending(g => g.Temperatur);
+                });
 
             Console.WriteLine("Ute: ");
             foreach (var group in groupbyMonthOutside)
             {
                 if (group.Temperatur < 10 && Höst.Count <= 4)
                     Höst.Add(new Årstid() { Dag = group.Dag, Månad = group.Månad });
+                else
+                {
+                    if (Höst.Count != 5)
+                        Höst.Clear();
+                }
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
+            }
 
-
+            foreach( var group in groupbyMonthOutside)
+            {
                 if (group.Temperatur < 0 && Vinter.Count <= 4)
                     Vinter.Add(new Årstid() { Dag = group.Dag, Månad = group.Månad });
                 else
                 {
-                    if (Höst.Count !=5 )
-                    Höst.Clear();
-                    if (Vinter.Count!= 5)
-                    Vinter.Clear();
+                    if (Vinter.Count != 5)
+                        Vinter.Clear();
                 }
-                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
             }
+            
 
             var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
              g => new
@@ -130,7 +136,7 @@ namespace Väderkollen
                  Månad = g.Key.Månad,
                  Dag = g.Key.Dag,
                  Temperatur = (g.Average(s => s.Temperatur)),
-             }).OrderByDescending(g => g.Temperatur);
+             });
 
             Console.WriteLine("Inne: ");
             foreach (var group in groupbyMonthInside)
