@@ -91,20 +91,34 @@ namespace Väderkollen
         }
 
 
-        public static void GetTemperatures(List<List<Data>> list )
+        public static void GetTemperatures(List<List<Data>> list)
         {
 
+            List<Årstid> Höst = new List<Årstid>();
+
+            List<Årstid> Vinter = new List<Årstid>();
             var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
                 g => new
                 {
                     Månad = g.Key.Månad,
                     Dag = g.Key.Dag,
                     Temperatur = (g.Average(s => s.Temperatur)),
-                }).OrderByDescending(g=>g.Temperatur);
-            
+                }).OrderByDescending(g => g.Temperatur);
+
             Console.WriteLine("Ute: ");
             foreach (var group in groupbyMonthOutside)
             {
+                if (group.Temperatur < 10 && Höst.Count <= 4)
+                    Höst.Add(new Årstid() { Dag = group.Dag, Månad = group.Månad });
+
+
+                if (group.Temperatur < 0 && Vinter.Count <= 4)
+                    Vinter.Add(new Årstid() { Dag = group.Dag, Månad = group.Månad });
+                else
+                {
+                    Höst.Clear();
+                    Vinter.Clear();
+                }
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
             }
 
@@ -114,14 +128,21 @@ namespace Väderkollen
                  Månad = g.Key.Månad,
                  Dag = g.Key.Dag,
                  Temperatur = (g.Average(s => s.Temperatur)),
-             }).OrderByDescending(g=>g.Temperatur);
+             }).OrderByDescending(g => g.Temperatur);
 
             Console.WriteLine("Inne: ");
             foreach (var group in groupbyMonthInside)
             {
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
             }
+
+            Console.WriteLine($"Datum för meterologisk höst : {Höst[0].Dag} / {Höst[0].Månad} ");
+            Console.WriteLine($"Datum för meterologisk vinter : {Vinter[0].Dag} / {Vinter[0].Månad} ");
+       
+
             ContinueMessage();
+
+
         }
 
         public static void GetMoisture(List<List<Data>> list)
@@ -154,6 +175,10 @@ namespace Väderkollen
             {
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Fuktighet}");
             }
+
+
+
+
             ContinueMessage();
         }
 
@@ -161,7 +186,7 @@ namespace Väderkollen
         {
 
             Console.WriteLine("Skriv in dag");
-            var dag = TryParseReadLine(1,31);
+            var dag = TryParseReadLine(1, 31);
             Console.WriteLine("Skriv in Månad");
             var månad = TryParseReadLine(1, 12);
 
@@ -175,11 +200,11 @@ namespace Väderkollen
 
             Console.WriteLine("Ute: ");
 
-            
+
             foreach (var group in groupbyMonthOutside)
             {
                 if (group.Dag == dag && group.Månad == månad)
-                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
+                    Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Fuktighet : {group.Fuktighet}");
             }
 
             var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
@@ -332,6 +357,39 @@ namespace Väderkollen
         }
 
 
+        List<List<Data>> Counter = new List<List<Data>>();
+
+ 
+
+        static string countermetod(Data data)
+        {
+            string autumn = "Empty";
+            int counter = 0;
+            int temperatur = 0;
+            if (temperatur < 10 && counter < 6)
+            {
+                autumn = autumn != "Empty" ? autumn = autumn : autumn = data.Datum;
+                counter++;
+            }
+            else if (temperatur < 10 && counter == 5)
+            {
+
+            }
+            else
+            {
+                counter = 0;
+                autumn = "Empty";
+            }
+
+            return autumn;
+        }
+
+
+
 
     }
-}
+       
+       
+
+    }
+
