@@ -10,16 +10,17 @@ namespace Väderkollen
     {
         public delegate void MyDelegate(List<string> data);
         static List<Action> MöGeLmEnU = new List<Action> { };
-        public static void RunMold()
+        public static void Run_Mold()
         {
             Console.WriteLine("Enter date you want to check for mold risk percentage");
             DateOnly userEntry = TryParseDateOnly();
             string date = userEntry.ToString("yyyy-MM-dd");
 
             MyDelegate del = CalculateMoldForDay;
-            ReadLinesFromFile("C:\\Users\\My Laptop\\Documents\\Github\\V-derdata\\Väderkollen\\Files\\tempdata5-medfel.txt", $"^{date}$", del);
+            ReadLinesFromFile("{Program.path}", $"^{date}", del);
+            Console.ReadLine();
         }
-        public static void RunMoldAllDates()
+        public static void Run_Mold_All_Dates()
         {
             MyDelegate del = CalculateMoldForDay;
             DateTime startDate = new DateTime(2016, 05, 31);
@@ -28,7 +29,7 @@ namespace Väderkollen
             for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
             {
 
-                ReadLinesFromFile("C:\\Users\\My Laptop\\Documents\\Github\\V-derdata\\Väderkollen\\Files\\tempdata5-medfel.txt", @"\b" + date.ToString("yyyy-MM-dd") + @"\b", del);
+                ReadLinesFromFile($"{Program.path}", @"\b" + date.ToString("yyyy-MM-dd") + @"\b", del);
             }
 
             Console.ReadLine();
@@ -41,7 +42,7 @@ namespace Väderkollen
             foreach (var line in data)
             {
                 float temperature;
-                string temp = RegEx.RegExFunction(@"(?<=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},Ute,|Inne,).(\d.\d|.\d)", line);
+                string temp = RegEx.RegExFunction(@"(?<=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},Inne,).(\d.\d|.\d)", line);
                 bool successTemperature = float.TryParse(temp, NumberStyles.Any, CultureInfo.InvariantCulture, out temperature);
                 int humidity;
                 bool successHumidity = int.TryParse(RegEx.RegExFunction(@"\d+$", line), NumberStyles.Any, CultureInfo.InvariantCulture, out humidity);
@@ -56,8 +57,8 @@ namespace Väderkollen
 
             if (date != "No date found" && humidityValues.Count > 0 && temperatures.Count > 0)
             {
-                int riskForMold = CalculateRiskOfMoldPercentage(((int)humidityValues.Average()), temperatures.Average());
-                Console.WriteLine($"The risk for mold on {date} is {riskForMold}%");
+                double riskForMold = (50 - Math.Abs(Convert.ToDouble(temperatures.Average()) - 20) + 50 - (100 - Convert.ToDouble(humidityValues.Average())));
+                Console.WriteLine($"The risk for mold on {date} is {(int)riskForMold}%");
             }
             else Console.WriteLine(date);
 
@@ -68,7 +69,7 @@ namespace Väderkollen
         {
             List<string> data = new List<string>();
 
-            using (StreamReader reader = new StreamReader(filePath))
+            using (StreamReader reader = new StreamReader(Program.path + "tempdata5-medfel.txt"))
             {
                 string line;
                 Stopwatch stopwatch = new Stopwatch();
@@ -86,15 +87,37 @@ namespace Väderkollen
 
                 process(data);
             }
-            Program.ContinueMessage();
+
         }
-        private static int CalculateRiskOfMoldPercentage(int humidity, float temperature)
+        public static int CalculateRiskOfMoldPercentage(int humidity, int temperature)
         {
-            int riskOfMoldPercentage = ((int)((humidity - 80) * (50 - temperature) / 10));
-            if (riskOfMoldPercentage < 0)
+            int[] offset = new int[50];
+            int[,] riskArray = new int[100, 50];
+            for (int hum = 0; hum < 100; hum++)
             {
-                riskOfMoldPercentage = 0;
+                for (int temp = 0; temp < 50; temp++)
+                {
+                    riskArray[hum, temp] = 50 - Math.Abs(temp - 20) + 50 - (100 - hum);
+
+                }
+
             }
+            for (int hum = 99; hum > 0; hum--)
+            {
+                for (int temp = 49; temp > 0; temp--)
+                {
+
+
+                    Console.Write($"[{riskArray[hum, temp]}]");
+                }
+
+                Console.WriteLine();
+
+            }
+            Console.ReadLine();
+
+            int riskOfMoldPercentage = riskArray[humidity, temperature];
+
             return riskOfMoldPercentage;
         }
         public static DateOnly TryParseDateOnly()

@@ -28,7 +28,10 @@ namespace Väderkollen
                Run_MoistureSpecific,
                Run_Temperature_Specific,
                Run_WarmestToColdestDay,
-               Run_GetMoistureMonth
+               Run_GetMoistureMonth,
+               MÖGEL.Run_Mold,
+               MÖGEL.Run_Mold_All_Dates
+
             };
 
         public static string path = "../../../Files/";
@@ -68,7 +71,8 @@ namespace Väderkollen
             Console.WriteLine("Choose an option:");
             for (int i = 0; i < menuList.Count; i++)
             {
-                Console.WriteLine($"[{i + 1}] {menuList[i].Method.Name}");
+
+                Console.WriteLine($"[{i + 1}] {menuList[i].Method.Name.Replace("_", " ")}");
             }
             Console.WriteLine("[0]. Exit");
             int choice = TryParseReadLine(-1, menuList.Count);
@@ -144,7 +148,7 @@ namespace Väderkollen
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
             }
 
-  
+
 
             ContinueMessage();
 
@@ -175,11 +179,11 @@ namespace Väderkollen
                         Höst.Clear();
                 }
 
-               
+
 
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
-                string newstring =$"Dag {group.Dag.ToString()} Månad {group.Månad.ToString()} Medeltemperatur {group.Temperatur.ToString()} \n";
-                File.AppendAllText(path + "Medeltemperaturer.txt",newstring);
+                string newstring = $"Dag {group.Dag.ToString()} Månad {group.Månad.ToString()} Medeltemperatur {group.Temperatur.ToString()} \n";
+                File.AppendAllText(path + "Medeltemperaturer.txt", newstring);
 
                 if (group.Temperatur < 0 && Vinter.Count <= 4)
                     Vinter.Add(new Årstid() { Dag = group.Dag, Månad = group.Månad });
@@ -209,7 +213,7 @@ namespace Väderkollen
 
             if (Vinter.Count() == 5)
                 Console.WriteLine($"Datum för meterologisk vinter : {Vinter[0].Dag} / {Vinter[0].Månad} ");
-       
+
 
             ContinueMessage();
 
@@ -252,7 +256,7 @@ namespace Väderkollen
         public static void GetMoistureMonth(List<List<Data>> list)
         {
 
-            var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad}).Select(
+            var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad }).Select(
                 g => new
                 {
                     Månad = g.Key.Månad,
@@ -451,8 +455,8 @@ namespace Väderkollen
         }
 
     }
-       
-       
 
-    }
+
+
+}
 
