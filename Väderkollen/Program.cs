@@ -18,6 +18,7 @@ namespace Väderkollen
 {
     internal class Program
     {
+        public static List<List<Data>> DataList = new List<List<Data>>();
         //Lista med alla menyalternativ som metoder, måste vara utan inparametrar.
         private static List<Action> Menu = new List<Action>()
             {
@@ -30,7 +31,10 @@ namespace Väderkollen
         public static string path = "../../../Files/";
         static void Main(string[] args)
         {
-
+            Console.WriteLine("Copying data");
+            DataList = CopyDataToList("tempdata5-medfel.txt");
+            Console.WriteLine("Data Copied! Press anything to continue");
+            Console.ReadKey();
             Run();
 
         }
@@ -71,22 +75,22 @@ namespace Väderkollen
 
         public static void Run_MoistureSpecific()
         {
-            Get_Moisture_Specific_Day(CopyDataToList("tempdata5-medfel.txt"));
+            Get_Moisture_Specific_Day(DataList);
 
         }
         public static void Run_Temperature_Specific()
         {
-            Get_Temperature_Specific_Day(CopyDataToList("tempdata5-medfel.txt"));
+            Get_Temperature_Specific_Day(DataList);
 
         }
         public static void Run_Moisture()
         {
-            GetMoisture(CopyDataToList("tempdata5-medfel.txt"));
+            GetMoisture(DataList);
 
         }
         public static void Run_Temperatures()
         {
-            GetTemperatures(CopyDataToList("tempdata5-medfel.txt"));
+            GetTemperatures(DataList);
 
         }
 
