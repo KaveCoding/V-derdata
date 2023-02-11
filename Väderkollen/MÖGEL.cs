@@ -57,7 +57,7 @@ namespace Väderkollen
 
             if (date != "No date found" && humidityValues.Count > 0 && temperatures.Count > 0)
             {
-                double riskForMold = (50 - Math.Abs(Convert.ToDouble(temperatures.Average()) - 20) + 50 - (100 - Convert.ToDouble(humidityValues.Average())));
+                double riskForMold = 100 - (Math.Abs(10 - Convert.ToDouble(temperatures.Average()))) - (Math.Abs(100 - Convert.ToDouble(humidityValues.Average())));
                 Console.WriteLine($"The risk for mold on {date} is {(int)riskForMold}%");
             }
             else Console.WriteLine(date);
@@ -83,7 +83,7 @@ namespace Väderkollen
 
                 }
                 stopwatch.Stop();
-                Console.WriteLine($"It took {stopwatch.Elapsed} to complete the search");
+                //Console.WriteLine($"It took {stopwatch.Elapsed} to complete the search");
 
                 process(data);
             }

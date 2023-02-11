@@ -421,6 +421,40 @@ namespace Väderkollen
                 return DataList;
             }
         }
+
+
+        public static void CalculateMoldForDay(List<string> data)  //Elias version
+        {
+            List<float> temperatures = new List<float>();
+            List<int> humidityValues = new List<int>();
+            string date = RegEx.RegExFunction(@"\d{2}-\d{2}(?<=-\d{2}-\d{2})", data.DefaultIfEmpty("No date found").First());
+            foreach (var line in data)
+            {
+                float temperature;
+                string temp = RegEx.RegExFunction(@"(?<=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},Inne,).(\d.\d|.\d)", line);
+                bool successTemperature = float.TryParse(temp, NumberStyles.Any, CultureInfo.InvariantCulture, out temperature);
+                int humidity;
+                bool successHumidity = int.TryParse(RegEx.RegExFunction(@"\d+$", line), NumberStyles.Any, CultureInfo.InvariantCulture, out humidity);
+
+                if (successTemperature && successHumidity)
+                {
+                    temperatures.Add(temperature);
+                    humidityValues.Add(humidity);
+                }
+            }
+
+
+            if (date != "No date found" && humidityValues.Count > 0 && temperatures.Count > 0)
+            {
+                double riskForMold = 100 - (Math.Abs(10 - Convert.ToDouble(temperatures.Average()))) - (Math.Abs(100 - Convert.ToDouble(humidityValues.Average())));
+                Console.WriteLine($"The risk for mold on {date} is {(int)riskForMold}%");
+            }
+            else Console.WriteLine(date);
+
+
+        }
+
+
         public static int TryParseReadLine(int spanLow, int spanHigh)
         {
             int key = 0;
