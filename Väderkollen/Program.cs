@@ -115,11 +115,13 @@ namespace Väderkollen
                     if (Höst.Count != 5)
                         Höst.Clear();
                 }
-                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
-            }
 
-            foreach( var group in groupbyMonthOutside)
-            {
+               
+
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
+                string newstring =$"Dag {group.Dag.ToString()} Månad {group.Månad.ToString()} Medeltemperatur {group.Temperatur.ToString()} \n";
+                File.AppendAllText(path + "Medeltemperaturer.txt",newstring);
+
                 if (group.Temperatur < 0 && Vinter.Count <= 4)
                     Vinter.Add(new Årstid() { Dag = group.Dag, Månad = group.Månad });
                 else
@@ -128,7 +130,6 @@ namespace Väderkollen
                         Vinter.Clear();
                 }
             }
-            
 
             var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
              g => new
@@ -144,12 +145,14 @@ namespace Väderkollen
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
             }
 
-            Console.WriteLine($"Datum för meterologisk höst : {Höst[0].Dag} / {Höst[0].Månad} ");
-            Console.WriteLine($"Datum för meterologisk vinter : {Vinter[0].Dag} / {Vinter[0].Månad} ");
+            if (Höst.Count() == 5)
+                Console.WriteLine($"Datum för meterologisk höst : {Höst[0].Dag} / {Höst[0].Månad} ");
+
+            if (Vinter.Count() == 5)
+                Console.WriteLine($"Datum för meterologisk vinter : {Vinter[0].Dag} / {Vinter[0].Månad} ");
        
 
             ContinueMessage();
-
 
         }
 
@@ -189,7 +192,6 @@ namespace Väderkollen
 
             ContinueMessage();
         }
-
         public static void Get_Moisture_Specific_Day(List<List<Data>> list)
         {
 
@@ -271,8 +273,6 @@ namespace Väderkollen
             }
             ContinueMessage();
         }
-
-
         public static List<List<Data>> CopyDataToList(string filename)
         {
             List<List<Data>> DataList = new List<List<Data>>();
@@ -328,7 +328,6 @@ namespace Väderkollen
                 return DataList;
             }
         }
-
         public static int TryParseReadLine(int spanLow, int spanHigh)
         {
             int key = 0;
@@ -361,37 +360,6 @@ namespace Väderkollen
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
         }
-
-
-        List<List<Data>> Counter = new List<List<Data>>();
-
- 
-
-        static string countermetod(Data data)
-        {
-            string autumn = "Empty";
-            int counter = 0;
-            int temperatur = 0;
-            if (temperatur < 10 && counter < 6)
-            {
-                autumn = autumn != "Empty" ? autumn = autumn : autumn = data.Datum;
-                counter++;
-            }
-            else if (temperatur < 10 && counter == 5)
-            {
-
-            }
-            else
-            {
-                counter = 0;
-                autumn = "Empty";
-            }
-
-            return autumn;
-        }
-
-
-
 
     }
        
