@@ -25,7 +25,8 @@ namespace Väderkollen
                Run_Moisture,
                Run_Temperatures,
                Run_MoistureSpecific,
-               Run_Temperature_Specific
+               Run_Temperature_Specific,
+               Run_WarmestToColdestDay
             };
 
         public static string path = "../../../Files/";
@@ -90,12 +91,59 @@ namespace Väderkollen
         }
         public static void Run_Temperatures()
         {
-            GetTemperatures(DataList);
+            GetTemperaturesOchMetereologiskVinterOchHöst(DataList);
+
+        }
+
+        public static void Run_WarmestToColdestDay()
+        {
+            WarmestToColdestDay(DataList);
 
         }
 
 
-        public static void GetTemperatures(List<List<Data>> list)
+        public static void WarmestToColdestDay(List<List<Data>> list)
+        {
+
+            List<Årstid> Höst = new List<Årstid>();
+
+            List<Årstid> Vinter = new List<Årstid>();
+            var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
+                g => new
+                {
+                    Månad = g.Key.Månad,
+                    Dag = g.Key.Dag,
+                    Temperatur = (g.Average(s => s.Temperatur)),
+                }).OrderByDescending(g => g.Temperatur);
+
+            Console.WriteLine("Ute: ");
+            foreach (var group in groupbyMonthOutside)
+            {
+
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
+            }
+
+            var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
+             g => new
+             {
+                 Månad = g.Key.Månad,
+                 Dag = g.Key.Dag,
+                 Temperatur = (g.Average(s => s.Temperatur)),
+             }).OrderByDescending(g => g.Temperatur);
+
+            Console.WriteLine("Inne: ");
+            foreach (var group in groupbyMonthInside)
+            {
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
+            }
+
+  
+
+            ContinueMessage();
+
+        }
+
+        public static void GetTemperaturesOchMetereologiskVinterOchHöst(List<List<Data>> list)
         {
 
             List<Årstid> Höst = new List<Årstid>();
@@ -169,7 +217,7 @@ namespace Väderkollen
                     Månad = g.Key.Månad,
                     Dag = g.Key.Dag,
                     Fuktighet = (g.Average(s => s.Fuktighet)),
-                }).OrderByDescending(g => g.Fuktighet);
+                }).OrderByDescending(g => g.Fuktighet).Reverse();
 
             Console.WriteLine("Ute: ");
             foreach (var group in groupbyMonthOutside)
@@ -183,7 +231,7 @@ namespace Väderkollen
                  Månad = g.Key.Månad,
                  Dag = g.Key.Dag,
                  Fuktighet = (g.Average(s => s.Fuktighet)),
-             }).OrderByDescending(g => g.Fuktighet);
+             }).OrderByDescending(g => g.Fuktighet).Reverse();
 
             Console.WriteLine("Inne: ");
             foreach (var group in groupbyMonthInside)
