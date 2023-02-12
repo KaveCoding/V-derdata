@@ -44,6 +44,7 @@ namespace Väderkollen
                RunMethod.Run_MonthlyTemperatureAndPrintToFile,
                RunMethod.Run_MonthlyMoldRisk_AndPrintToFile,
                RunMethod.Run_DailyMoldRisk,
+               RunMethod.Metereologisk_Vinter_Och_Höst,
                //MÖGEL.RunMethod.Run_Mold,
                //MÖGEL.RunMethod.Run_Mold_All_Dates
 

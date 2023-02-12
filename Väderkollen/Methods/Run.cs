@@ -45,5 +45,9 @@ namespace Väderkollen.Methods
         {
             Get.Get_Mold_Risk_Per_Day(Program.DataList);
         }
+        public static void Metereologisk_Vinter_Och_Höst()
+        {
+            Get.Get_TemperaturesOchMetereologiskVinterOchHöst(Program.DataList);
+        }
     }
 }

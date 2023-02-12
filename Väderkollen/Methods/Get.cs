@@ -76,7 +76,7 @@ namespace Väderkollen.Methods
                 }
 
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
-                if (group.Temperatur < 0 && Vinter.Count <= 4)
+                if (group.Temperatur < 1 && Vinter.Count <= 4)
                     Vinter.Add(new Årstid() { Dag = group.Dag, Månad = group.Månad });
                 else
                 {
@@ -102,18 +102,20 @@ namespace Väderkollen.Methods
             if (Höst.Count() == 5)
             {
                 Console.WriteLine($"Datum för meterologisk höst : {Höst[0].Dag} / {Höst[0].Månad} ");
-                string newstring = $" Månad {Höst[0].Dag.ToString()} Medelfuktighet {Höst[1].Månad.ToString()} \n";
+                string newstring = $" Dag: {Höst[0].Dag.ToString()} Månad: {Höst[0].Månad.ToString()} \n";
                 File.AppendAllText(Program.path + "Datum_för_meterologisk_höst.txt", newstring);
             }
 
 
 
             if (Vinter.Count() == 5)
+            {
                 Console.WriteLine($"Datum för meterologisk vinter : {Vinter[0].Dag} / {Vinter[0].Månad} ");
-
-
+                string newstring = $" Dag: {Vinter[0].Dag.ToString()} Månad: {Vinter[0].Månad.ToString()} \n";
+                File.AppendAllText(Program.path + "Datum_för_meterologisk_Vinter.txt", newstring);
+            }
+                
             Program.ContinueMessage();
-
         }
         public static void Get_MostToLeastHumidDay(List<List<Data>> list)
         {
