@@ -9,7 +9,13 @@
       Datum för meteologisk vinter                                                  klar
       */
 
-/*Printmetoder */
+/*Printmetoder
+ 
+Medeltemperatur ute och inne, per månad Klar
+Medelluftfuktighet inne och ute, per månad Klar
+Medelmögelrisk inne och ute, per månad
+
+ */
 
 /*Inomhus
 Medeltemperatur per dag, valt datum                                                 klar
@@ -25,12 +31,13 @@ namespace Väderkollen
         //Lista med alla menyalternativ som metoder, måste vara utan inparametrar.
         private static List<Action> Menu = new List<Action>()
             {
-               Run_Moisture,
-               Run_Temperatures,
+               Run_Least_Humid_Day_To_Most,
+               Run_Hottest_To_Coldest_Day,
                Run_MoistureSpecific,
                Run_Temperature_Specific,
                Run_WarmestToColdestDay,
-               Run_GetMoistureMonth,
+               Run_MonthlyHumidityAndPrintToFile,
+               Run_MonthlyTemperatureAndPrintToFile,
                MÖGEL.Run_Mold,
                MÖGEL.Run_Mold_All_Dates
 
@@ -90,12 +97,16 @@ namespace Väderkollen
             Get_Temperature_Specific_Day(DataList);
 
         }
-        public static void Run_Moisture()
+        public static void Run_Least_Humid_Day_To_Most()
         {
-            GetMoisture(DataList);
+            GetMostToLeastHumidDay(DataList);
 
         }
-        public static void Run_Temperatures()
+        public static void Run_MonthlyTemperatureAndPrintToFile()
+        {
+            GetTemperatureMonthAndPrintToFile(DataList);
+        }
+        public static void Run_Hottest_To_Coldest_Day()
         {
             GetTemperaturesOchMetereologiskVinterOchHöst(DataList);
 
@@ -105,9 +116,9 @@ namespace Väderkollen
             WarmestToColdestDay(DataList);
 
         }
-        public static void Run_GetMoistureMonth()
+        public static void Run_MonthlyHumidityAndPrintToFile()
         {
-            GetMoistureMonth(DataList);
+            GetMoistureMonthAndPrintToFile(DataList);
 
         }
         public static void WarmestToColdestDay(List<List<Data>> list)
@@ -175,12 +186,7 @@ namespace Väderkollen
                         Höst.Clear();
                 }
 
-
-
                 Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {group.Temperatur}");
-                string newstring = $"Dag {group.Dag.ToString()} Månad {group.Månad.ToString()} Medeltemperatur {group.Temperatur.ToString()} \n";
-                File.AppendAllText(path + "Medeltemperaturer.txt", newstring);
-
                 if (group.Temperatur < 0 && Vinter.Count <= 4)
                     Vinter.Add(new Årstid() { Dag = group.Dag, Månad = group.Månad });
                 else
@@ -205,7 +211,13 @@ namespace Väderkollen
             }
 
             if (Höst.Count() == 5)
+            {
                 Console.WriteLine($"Datum för meterologisk höst : {Höst[0].Dag} / {Höst[0].Månad} ");
+                string newstring = $" Månad {Höst[0].Dag.ToString()} Medelfuktighet {Höst[1].Månad.ToString()} \n";
+                File.AppendAllText(path + "Datum_för_meterologisk_höst.txt", newstring);
+            }
+               
+                
 
             if (Vinter.Count() == 5)
                 Console.WriteLine($"Datum för meterologisk vinter : {Vinter[0].Dag} / {Vinter[0].Månad} ");
@@ -214,7 +226,7 @@ namespace Väderkollen
             ContinueMessage();
 
         }
-        public static void GetMoisture(List<List<Data>> list)
+        public static void GetMostToLeastHumidDay(List<List<Data>> list)
         {
 
             var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
@@ -228,7 +240,7 @@ namespace Väderkollen
             Console.WriteLine("Ute: ");
             foreach (var group in groupbyMonthOutside)
             {
-                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {Math.Ceiling(group.Fuktighet)}");
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {Math.Round(group.Fuktighet)}");
             }
 
             var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
@@ -242,7 +254,7 @@ namespace Väderkollen
             Console.WriteLine("Inne: ");
             foreach (var group in groupbyMonthInside)
             {
-                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {Math.Ceiling(group.Fuktighet)}");
+                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {Math.Round(group.Fuktighet)}");
             }
 
             ContinueMessage();
@@ -254,31 +266,80 @@ namespace Väderkollen
                 g => new
                 {
                     Månad = g.Key.Månad,
-                    Fuktighet = Math.Ceiling(g.Average(s => s.Fuktighet))
+                    Fuktighet = Math.Round(g.Average(s => s.Fuktighet)),
+                    Summa = g.Sum(s=>s.Fuktighet),
+                    Antal = g.Count()
                 });
 
             Console.WriteLine("Ute per månad: ");
             foreach (var group in groupbyMonthOutside)
             {
-                Console.WriteLine($"Månad: {group.Månad} Temperatur : {Math.Ceiling(group.Fuktighet)}");
+                Console.WriteLine($"Månad: {group.Månad} Summa {group.Summa} / Antal {group.Antal} =  MedelFuktighet : {Math.Round(group.Fuktighet)} ");
+
+                string newstring = $" Månad {group.Månad.ToString()} Medelfuktighet {group.Fuktighet.ToString()} \n";
+                File.AppendAllText(path + "MedelFuktighetUte.txt", newstring);
             }
 
-            var groupbyMonthInside = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
+            var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad}).Select(
              g => new
              {
                  Månad = g.Key.Månad,
-                 Dag = g.Key.Dag,
-                 Fuktighet = Math.Ceiling(g.Average(s => s.Fuktighet)),
+                 Fuktighet = Math.Round(g.Average(s => s.Fuktighet)),
+                 Summa = g.Sum(s => s.Fuktighet),
+                 Antal = g.Count()
              });
 
-            Console.WriteLine("Ute Per dag: ");
+            Console.WriteLine("Inne Per månad: ");
             foreach (var group in groupbyMonthInside)
             {
-                Console.WriteLine($"Dag : {group.Dag} Månad: {group.Månad} Temperatur : {Math.Ceiling(group.Fuktighet)}");
+                Console.WriteLine($"Månad: {group.Månad} Summa {group.Summa} / Antal {group.Antal} =  Medelfuktighet : {Math.Round(group.Fuktighet)} ");
+
+                string newstring = $" Månad {group.Månad.ToString()} Medelfuktighet {group.Fuktighet.ToString()} \n";
+                File.AppendAllText(path + "MedelFuktighetInne.txt", newstring);
             }
 
             ContinueMessage();
         }
+        public static void GetTemperatureMonthAndPrintToFile(List<List<Data>> list)
+        {
+            var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad }).Select(
+                g => new
+                {
+                    Månad = g.Key.Månad,
+                    Temperatur = Math.Round(Convert.ToDecimal(g.Average(s => s.Temperatur))),
+                    Summa = g.Sum(s => s.Temperatur),
+                    Antal = g.Count()
+                }) ;
+
+            Console.WriteLine("Ute per månad: ");
+            foreach (var group in groupbyMonthOutside)
+            {
+                Console.WriteLine($"Månad: {group.Månad} Summa {group.Summa} / Antal {group.Antal} =  Medeltemperatur : {Math.Round(group.Temperatur)} ");
+
+                string newstring = $" Månad {group.Månad.ToString()} Medeltemperatur {group.Temperatur.ToString()} \n";
+                File.AppendAllText(path + "MedelTemperaturUte.txt", newstring);
+            }
+
+            var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad}).Select(
+             g => new
+             {
+                 Månad = g.Key.Månad,
+                 Temperatur = Math.Round(Convert.ToDecimal(g.Average(s => s.Temperatur))),
+                 Summa = g.Sum(s => s.Temperatur),
+                 Antal = g.Count()
+             });
+
+            Console.WriteLine("Inne Per månad: ");
+            foreach (var group in groupbyMonthInside)
+            {
+                Console.WriteLine($"Månad: {group.Månad} Summa {Math.Round(Convert.ToDecimal(group.Summa))} / Antal {group.Antal} =  Medeltemperatur : {Math.Round(group.Temperatur)} ");
+                string newstring = $" Månad {group.Månad.ToString()} Medeltemperatur {group.Temperatur.ToString()} \n";
+                File.AppendAllText(path + "MedelTemperaturInne.txt", newstring);
+            }
+
+            ContinueMessage();
+        }
+
         public static void Get_Moisture_Specific_Day(List<List<Data>> list)
         {
 
@@ -390,9 +451,9 @@ namespace Väderkollen
                             Datum = datum,
                             Dag = int.Parse(dag),
                             Månad = int.Parse(månad),
-                            Temperatur = Math.Ceiling(Convert.ToDouble(temperatur, CultureInfo.InvariantCulture)),
+                            Temperatur = Math.Round(Convert.ToDouble(temperatur, CultureInfo.InvariantCulture)),
 
-                            Fuktighet = Math.Ceiling(Convert.ToDouble(fuktighet))
+                            Fuktighet = Math.Round(Convert.ToDouble(fuktighet))
                         };
                         UteDatalist.Add(data);
                     }
