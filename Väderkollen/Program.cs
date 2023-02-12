@@ -4,7 +4,7 @@
       Medeltemperatur och luftfuktighet per dag, valt datum, sökmöjlighet           klar
       Sortering av varmast till kallaste dagen enligt medeltemperatur per dag       klar
       sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag  klar
-      Sortering av minst till störst risk av mögel
+      Sortering av minst till störst risk av mögel                                  klar
       Datum för meteorologisk Höst                                                  klar
       Datum för meteologisk vinter                                                  klar
       */
@@ -13,7 +13,7 @@
  
 Medeltemperatur ute och inne, per månad Klar
 Medelluftfuktighet inne och ute, per månad Klar
-Medelmögelrisk inne och ute, per månad
+Medelmögelrisk inne och ute, per månad klar
 
  */
 
@@ -21,10 +21,13 @@ Medelmögelrisk inne och ute, per månad
 Medeltemperatur per dag, valt datum                                                 klar
 Sortering av varmast till kallaste dagen enligt medeltemperatur per dag             klar
 sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag        klar
-Sortering av minst till störst risk av mögel
+Sortering av minst till störst risk av mögel                                        klar
 */
 namespace Väderkollen
+
 {
+
+
     internal class Program
     {
         public static List<List<Data>> DataList = new List<List<Data>>();
@@ -39,12 +42,15 @@ namespace Väderkollen
                Run_MonthlyHumidityAndPrintToFile,
                Run_MonthlyTemperatureAndPrintToFile,
                Run_MonthlyMoldRisk,
-               MÖGEL.Run_Mold,
-               MÖGEL.Run_Mold_All_Dates
+               Run_DailyMoldRisk,
+               //MÖGEL.Run_Mold,
+               //MÖGEL.Run_Mold_All_Dates
 
             };
 
         public static string path = "../../../Files/";
+
+
         static void Main(string[] args)
         {
             Console.WriteLine("Copying data");
@@ -124,7 +130,11 @@ namespace Väderkollen
         }
         public static void Run_MonthlyMoldRisk()
         {
-            CalculateMoldForDay(DataList);
+            CalculateMoldForMonth_And_Print_Mould_Formula(DataList);
+        }
+        public static void Run_DailyMoldRisk()
+        {
+            Calculate_Mold_Risk_Per_Day(DataList);
         }
         public static void Get_WarmestToColdestDay(List<List<Data>> list)
         {
@@ -456,8 +466,8 @@ namespace Väderkollen
                             Dag = int.Parse(dag),
                             Månad = int.Parse(månad),
                             Temperatur = Math.Round(Convert.ToDouble(temperatur, CultureInfo.InvariantCulture)),
-
-                            Fuktighet = Math.Round(Convert.ToDouble(fuktighet))
+                            Fuktighet = Math.Round(Convert.ToDouble(fuktighet)),
+                            Mögelrisk = null
                         };
                         UteDatalist.Add(data);
                     }
@@ -469,7 +479,8 @@ namespace Väderkollen
                             Dag = int.Parse(dag),
                             Månad = int.Parse(månad),
                             Temperatur = Convert.ToDouble(temperatur, CultureInfo.InvariantCulture),
-                            Fuktighet = Convert.ToDouble(fuktighet, CultureInfo.InvariantCulture)
+                            Fuktighet = Convert.ToDouble(fuktighet, CultureInfo.InvariantCulture),
+                            Mögelrisk = null
                         };
                         InneDataList.Add(data);
                     }
@@ -480,7 +491,49 @@ namespace Väderkollen
                 return DataList;
             }
         }
-        public static void CalculateMoldForDay(List<List<Data>> list)  //Elias version
+        public static void Calculate_Mold_Risk_Per_Day(List<List<Data>> list)  //Elias version
+        {
+  
+            var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad, M.Dag }).Select(
+               g => new
+               {
+                   Månad = g.Key.Månad,
+                   Dag = g.Key.Dag,
+                   Temperatur = Math.Round(Convert.ToDecimal(g.Average(s => s.Temperatur))),
+                   Fuktighet = Math.Round(Convert.ToDecimal(g.Average(s => s.Fuktighet))),
+                   Mögelrisk = 100 - Math.Abs(30 - Convert.ToDecimal((g.Average(s => s.Temperatur)))) - Math.Abs(Convert.ToDecimal(100 - g.Average(s => s.Fuktighet)))
+               }).OrderBy(s=>s.Mögelrisk);
+
+            Console.WriteLine("Ute per dag: ");
+
+            
+            foreach (var group in groupbyMonthOutside)
+            {
+
+                Console.WriteLine($"Day {group.Dag} Month {group.Månad} Temperatur : {group.Temperatur} Fuktighet : {group.Fuktighet} Mögelrisk :{Math.Round(group.Mögelrisk)}");
+
+            }
+
+            var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad, M.Dag }).Select(
+             g => new
+             {
+                 Månad = g.Key.Månad,
+                 Dag = g.Key.Dag,
+                 Temperatur = Math.Round(Convert.ToDecimal(g.Average(s => s.Temperatur))),
+                 Fuktighet = Math.Round(Convert.ToDecimal(g.Average(s => s.Fuktighet))),
+                 Mögelrisk = 100 - Math.Abs(30-Convert.ToDecimal((g.Average(s=>s.Temperatur)))) - Math.Abs(Convert.ToDecimal(100-g.Average(s=>s.Fuktighet)))
+
+             }).OrderBy(s=>s.Mögelrisk);
+
+            Console.WriteLine("Inne per dag: ");
+            foreach (var group in groupbyMonthInside)
+            {
+                Console.WriteLine($"Day {group.Dag} Month {group.Månad} Temperatur : {group.Temperatur} Fuktighet : {group.Fuktighet} Mögelrisk :{Math.Round(group.Mögelrisk)}");
+            }
+
+            ContinueMessage();
+        }
+        public static void CalculateMoldForMonth_And_Print_Mould_Formula(List<List<Data>> list)  //Elias version
         {
             var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad }).Select(
                g => new
@@ -499,8 +552,8 @@ namespace Väderkollen
                 Console.WriteLine($"Månad: {group.Månad} Medelfuktighet {group.Fuktighet} Medeltemperatur {Math.Round(group.Temperatur)}");
                 Console.WriteLine($"The risk for mold on månad {group.Månad} is {(int)riskForMold}%");
 
-                string newstring = $" Månad {group.Månad.ToString()} Medeltemperatur {group.Temperatur.ToString()} \n";
-                File.AppendAllText(path + "MedelTemperaturUte.txt", newstring);
+                string newstring = $" Månad: {group.Månad} Mögelrisk: {riskForMold} \n";
+                File.AppendAllText(path + "Mögelrisk_Per_Månad_Ute.txt", newstring);
             }
             var groupbyMonthInside = list[1].GroupBy(M => new { M.Månad }).Select(
              g => new
@@ -519,14 +572,15 @@ namespace Väderkollen
                 Console.WriteLine($"Månad: {group.Månad} Medelfuktighet {group.Fuktighet} Medeltemperatur {Math.Round(group.Temperatur)}");
                 Console.WriteLine($"The risk for mold on månad {group.Månad} is {(int)riskForMold}%");
 
-                string newstring = $" Månad {group.Månad.ToString()} Medeltemperatur {group.Temperatur.ToString()} \n";
-                File.AppendAllText(path + "MedelTemperaturUte.txt", newstring);
+                string newstring = $" Månad: {group.Månad} Mögelrisk: {riskForMold} \n";
+                File.AppendAllText(path + "Mögelrisk_per_Månad_inne.txt", newstring);
             }
+
+            File.AppendAllText(path + "Mögelformel.txt",$" 100 - abs(30-medeltemperatur) - abs(100-fuktighet)");
 
             ContinueMessage();
 
         }
-
         public static int TryParseReadLine(int spanLow, int spanHigh)
         {
             int key = 0;

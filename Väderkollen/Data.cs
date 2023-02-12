@@ -8,6 +8,7 @@
         public double? Temperatur { get; set; }
         //public string UteEllerInne { get; set; }
         public double Fuktighet { get; set; }
+        public double? Mögelrisk { get; set; }
 
     }
 }
