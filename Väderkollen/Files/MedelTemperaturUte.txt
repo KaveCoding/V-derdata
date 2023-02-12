@@ -16,3 +16,41 @@
  Månad 11 Medeltemperatur 3 
  Månad 12 Medeltemperatur 3 
  Månad 1 Medeltemperatur 4 
+ Månad 5 Medeltemperatur 25 
+ Månad 6 Medeltemperatur 16 
+ Månad 7 Medeltemperatur 20 
+ Månad 8 Medeltemperatur 18 
+ Månad 9 Medeltemperatur 16 
+ Månad 10 Medeltemperatur 8 
+ Månad 11 Medeltemperatur 3 
+ Månad 12 Medeltemperatur 3 
+ Månad 1 Medeltemperatur 4 
+ Månad 5 Medeltemperatur 25 
+ Månad 6 Medeltemperatur 25 
+ Månad 7 Medeltemperatur 26 
+ Månad 8 Medeltemperatur 26 
+ Månad 9 Medeltemperatur 23 
+ Månad 10 Medeltemperatur 22 
+ Månad 11 Medeltemperatur 23 
+ Månad 13 Medeltemperatur 22 
+ Månad 12 Medeltemperatur 22 
+ Månad 1 Medeltemperatur 21 
+ Månad 5 Medeltemperatur 25 
+ Månad 6 Medeltemperatur 16 
+ Månad 7 Medeltemperatur 20 
+ Månad 8 Medeltemperatur 18 
+ Månad 9 Medeltemperatur 16 
+ Månad 10 Medeltemperatur 8 
+ Månad 11 Medeltemperatur 3 
+ Månad 12 Medeltemperatur 3 
+ Månad 1 Medeltemperatur 4 
+ Månad 5 Medeltemperatur 25 
+ Månad 6 Medeltemperatur 25 
+ Månad 7 Medeltemperatur 26 
+ Månad 8 Medeltemperatur 26 
+ Månad 9 Medeltemperatur 23 
+ Månad 10 Medeltemperatur 22 
+ Månad 11 Medeltemperatur 23 
+ Månad 13 Medeltemperatur 22 
+ Månad 12 Medeltemperatur 22 
+ Månad 1 Medeltemperatur 21 
