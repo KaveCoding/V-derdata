@@ -1,0 +1,1 @@
+ 100 - abs(30-medeltemperatur) - abs(100-fuktighet)

@@ -1,4 +1,4 @@
-﻿namespace Väderkollen
+﻿namespace Väderkollen.Datatypes
 {
     public class Data
     {

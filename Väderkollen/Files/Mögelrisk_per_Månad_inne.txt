@@ -1,0 +1,10 @@
+ Månad: 5 Mögelrisk: 33 
+ Månad: 6 Mögelrisk: 24 
+ Månad: 7 Mögelrisk: 38 
+ Månad: 8 Mögelrisk: 31 
+ Månad: 9 Mögelrisk: 35 
+ Månad: 10 Mögelrisk: 19 
+ Månad: 11 Mögelrisk: 12 
+ Månad: 13 Mögelrisk: 6 
+ Månad: 12 Mögelrisk: 8 
+ Månad: 1 Mögelrisk: 9 

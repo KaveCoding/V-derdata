@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 
 
-namespace Väderkollen
+namespace Väderkollen.Methods
 {
 
     internal class MÖGEL
@@ -57,7 +57,7 @@ namespace Väderkollen
 
             if (date != "No date found" && humidityValues.Count > 0 && temperatures.Count > 0)
             {
-                double riskForMold = 100 - (Math.Abs(10 - Convert.ToDouble(temperatures.Average()))) - (Math.Abs(100 - Convert.ToDouble(humidityValues.Average())));
+                double riskForMold = 100 - Math.Abs(10 - Convert.ToDouble(temperatures.Average())) - Math.Abs(100 - Convert.ToDouble(humidityValues.Average()));
                 Console.WriteLine($"The risk for mold on {date} is {(int)riskForMold}%");
             }
             else Console.WriteLine(date);
