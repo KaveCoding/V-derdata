@@ -5,9 +5,11 @@
       Sortering av varmast till kallaste dagen enligt medeltemperatur per dag       klar
       sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag  klar
       Sortering av minst till störst risk av mögel
-      Datum för meteorologisk Höst
-      Datum för meteologisk vinter
+      Datum för meteorologisk Höst                                                  klar
+      Datum för meteologisk vinter                                                  klar
       */
+
+/*Printmetoder */
 
 /*Inomhus
 Medeltemperatur per dag, valt datum                                                 klar
@@ -78,8 +80,6 @@ namespace Väderkollen
             int choice = TryParseReadLine(-1, menuList.Count);
             return choice;
         }
-
-
         public static void Run_MoistureSpecific()
         {
             Get_Moisture_Specific_Day(DataList);
@@ -100,19 +100,16 @@ namespace Väderkollen
             GetTemperaturesOchMetereologiskVinterOchHöst(DataList);
 
         }
-
         public static void Run_WarmestToColdestDay()
         {
             WarmestToColdestDay(DataList);
 
         }
-
         public static void Run_GetMoistureMonth()
         {
             GetMoistureMonth(DataList);
 
         }
-
         public static void WarmestToColdestDay(List<List<Data>> list)
         {
 
@@ -153,7 +150,6 @@ namespace Väderkollen
             ContinueMessage();
 
         }
-
         public static void GetTemperaturesOchMetereologiskVinterOchHöst(List<List<Data>> list)
         {
 
@@ -218,7 +214,6 @@ namespace Väderkollen
             ContinueMessage();
 
         }
-
         public static void GetMoisture(List<List<Data>> list)
         {
 
@@ -252,8 +247,7 @@ namespace Väderkollen
 
             ContinueMessage();
         }
-
-        public static void GetMoistureMonth(List<List<Data>> list)
+        public static void GetMoistureMonthAndPrintToFile(List<List<Data>> list)
         {
 
             var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad }).Select(
@@ -421,8 +415,6 @@ namespace Väderkollen
                 return DataList;
             }
         }
-
-
         public static void CalculateMoldForDay(List<string> data)  //Elias version
         {
             List<float> temperatures = new List<float>();
@@ -453,8 +445,6 @@ namespace Väderkollen
 
 
         }
-
-
         public static int TryParseReadLine(int spanLow, int spanHigh)
         {
             int key = 0;
