@@ -5,9 +5,11 @@
       Sortering av varmast till kallaste dagen enligt medeltemperatur per dag       klar
       sortering av torrast till fuktigaste dagen enligt medelluftfuktighet per dag  klar
       Sortering av minst till störst risk av mögel
-      Datum för meteorologisk Höst
-      Datum för meteologisk vinter
+      Datum för meteorologisk Höst                                                  klar
+      Datum för meteologisk vinter                                                  klar
       */
+
+/*Printmetoder */
 
 /*Inomhus
 Medeltemperatur per dag, valt datum                                                 klar
@@ -78,8 +80,6 @@ namespace Väderkollen
             int choice = TryParseReadLine(-1, menuList.Count);
             return choice;
         }
-
-
         public static void Run_MoistureSpecific()
         {
             Get_Moisture_Specific_Day(DataList);
@@ -100,19 +100,16 @@ namespace Väderkollen
             GetTemperaturesOchMetereologiskVinterOchHöst(DataList);
 
         }
-
         public static void Run_WarmestToColdestDay()
         {
             WarmestToColdestDay(DataList);
 
         }
-
         public static void Run_GetMoistureMonth()
         {
             GetMoistureMonth(DataList);
 
         }
-
         public static void WarmestToColdestDay(List<List<Data>> list)
         {
 
@@ -153,7 +150,6 @@ namespace Väderkollen
             ContinueMessage();
 
         }
-
         public static void GetTemperaturesOchMetereologiskVinterOchHöst(List<List<Data>> list)
         {
 
@@ -218,7 +214,6 @@ namespace Väderkollen
             ContinueMessage();
 
         }
-
         public static void GetMoisture(List<List<Data>> list)
         {
 
@@ -252,8 +247,7 @@ namespace Väderkollen
 
             ContinueMessage();
         }
-
-        public static void GetMoistureMonth(List<List<Data>> list)
+        public static void GetMoistureMonthAndPrintToFile(List<List<Data>> list)
         {
 
             var groupbyMonthOutside = list[0].GroupBy(M => new { M.Månad }).Select(
@@ -420,6 +414,36 @@ namespace Väderkollen
                 Console.WriteLine("Datan är nu kopierad!");
                 return DataList;
             }
+        }
+        public static void CalculateMoldForDay(List<string> data)  //Elias version
+        {
+            List<float> temperatures = new List<float>();
+            List<int> humidityValues = new List<int>();
+            string date = RegEx.RegExFunction(@"\d{2}-\d{2}(?<=-\d{2}-\d{2})", data.DefaultIfEmpty("No date found").First());
+            foreach (var line in data)
+            {
+                float temperature;
+                string temp = RegEx.RegExFunction(@"(?<=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},Inne,).(\d.\d|.\d)", line);
+                bool successTemperature = float.TryParse(temp, NumberStyles.Any, CultureInfo.InvariantCulture, out temperature);
+                int humidity;
+                bool successHumidity = int.TryParse(RegEx.RegExFunction(@"\d+$", line), NumberStyles.Any, CultureInfo.InvariantCulture, out humidity);
+
+                if (successTemperature && successHumidity)
+                {
+                    temperatures.Add(temperature);
+                    humidityValues.Add(humidity);
+                }
+            }
+
+
+            if (date != "No date found" && humidityValues.Count > 0 && temperatures.Count > 0)
+            {
+                double riskForMold = 100 - (Math.Abs(10 - Convert.ToDouble(temperatures.Average()))) - (Math.Abs(100 - Convert.ToDouble(humidityValues.Average())));
+                Console.WriteLine($"The risk for mold on {date} is {(int)riskForMold}%");
+            }
+            else Console.WriteLine(date);
+
+
         }
         public static int TryParseReadLine(int spanLow, int spanHigh)
         {
